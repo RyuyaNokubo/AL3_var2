@@ -92,6 +92,29 @@ Matrix4 setTrans(const WorldTransform a)
 	return b;
 }
 
+float rad(float a)
+{
+	return 3.141592 * a / 180;
+}
+
+float MinNum(float a, float aMin)
+{
+	if (a < aMin)
+	{
+		return aMin;
+	}
+	return a;
+}
+
+float MaxNum(float a, float aMax)
+{
+	if (a > aMax)
+	{
+		return aMax;
+	}
+	return a;
+}
+
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
@@ -129,14 +152,25 @@ void GameScene::Initialize() {
 		worldTransform.Initialize();
 	}
 
-	//カメラ視点座標を設定
+	////カメラ視点座標を設定
 	//viewProjection_.eye = { 0,0,-10 };
 
-	//カメラ注視点座標を設定
-	viewProjection_.target = { 10,0,0 };
+	////カメラ注視点座標を設定
+	//viewProjection_.target = { 10,0,0 };
 
-	//カメラ上方向ベクトルを設定
-	viewProjection_.up = { cosf(PI / 4.0f),sinf(PI / 4.0f),0.0f };
+	////カメラ上方向ベクトルを設定
+	//viewProjection_.up = { cosf(PI / 4.0f),sinf(PI / 4.0f),0.0f };
+
+	//カメラ垂直方向視野角を設定
+	viewProjection_.fovAngleY = rad(10.0f);
+
+	//アスペクト比を設定
+	viewProjection_.aspectRatio = 1.0f;
+
+	//ニアクリップ距離を設定
+	viewProjection_.nearZ = 52.0f;
+	//ファークリップ距離を設定
+	viewProjection_.farZ = 53.0f;
 
 	//ビュープロジェクションの初期化
 	viewProjection_.Initialize();
@@ -216,51 +250,80 @@ void GameScene::Update() {
 	//デバッグカメラの更新
 	debugCamera_->Update();
 
-	//視点の移動ベクトル
-	Vector3 moveZ = { 0,0,0 };
-	//注視点の移動ベクトル
-	Vector3 moveX = { 0,0,0 };
+	////視点の移動ベクトル
+	//Vector3 moveZ = { 0,0,0 };
+	////注視点の移動ベクトル
+	//Vector3 moveX = { 0,0,0 };
 
-	//視点、注視点の移動速さ
-	const float speed = 0.2f;
+	////視点、注視点の移動速さ
+	//const float speed = 0.2f;
 
-	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_W))
+	////押した方向で移動ベクトルを変更
+	//if (input_->PushKey(DIK_W))
+	//{
+	//	moveZ.z += speed;
+	//}
+	//else if (input_->PushKey(DIK_S))
+	//{
+	//	moveZ.z -= speed;
+	//}
+	//else if (input_->PushKey(DIK_LEFT))
+	//{
+	//	moveX.x -= speed;
+	//}
+	//else if (input_->PushKey(DIK_RIGHT))
+	//{
+	//	moveX.x += speed;
+	//}
+
+	////視点移動(ベクトルの加算)
+	//viewProjection_.eye += moveZ;
+
+	////注視点移動(ベクトルの加算)
+	//viewProjection_.target += moveX;
+
+	////上方向回転処理
+	////上方向の回転速さ[ラジアン/frame]
+	//const float kUpRotSpeed = 0.05f;
+
+	////押した方向で移動ベクトルを変更
+	//if (input_->PushKey(DIK_SPACE))
+	//{
+	//	viewAngle += kUpRotSpeed;
+	//	viewAngle = fmodf(viewAngle, PI * 2.0f);
+	//}
+
+	////上方向ベクトルを計算(半径1の円周上の座標)
+	//viewProjection_.up = { cosf(viewAngle),sinf(viewAngle),0.0f };
+
+	//Fov変更処理
 	{
-		moveZ.z += speed;
+		//上キーで視野角が広がる
+		if (input_->PushKey(DIK_UP))
+		{
+			viewProjection_.fovAngleY += 0.01f;
+			viewProjection_.fovAngleY = MaxNum(viewProjection_.fovAngleY, PI);
+		}
+		//下キーで視野角が狭まる
+		else if (input_->PushKey(DIK_DOWN))
+		{
+			viewProjection_.fovAngleY -= 0.01f;
+			viewProjection_.fovAngleY = MinNum(viewProjection_.fovAngleY, 0.01f);
+		}
 	}
-	else if (input_->PushKey(DIK_S))
+
+	//クリップ距離変更処理
 	{
-		moveZ.z -= speed;
+		//A,Dキーでニアクリップ距離を増減
+		if (input_->PushKey(DIK_A))
+		{
+			viewProjection_.nearZ+=0.1f;
+		}
+		else if (input_->PushKey(DIK_D))
+		{
+			viewProjection_.nearZ-=0.1f;
+		}
 	}
-	else if (input_->PushKey(DIK_LEFT))
-	{
-		moveX.x -= speed;
-	}
-	else if (input_->PushKey(DIK_RIGHT))
-	{
-		moveX.x += speed;
-	}
-
-	//視点移動(ベクトルの加算)
-	viewProjection_.eye += moveZ;
-
-	//注視点移動(ベクトルの加算)
-	viewProjection_.target += moveX;
-
-	//上方向回転処理
-	//上方向の回転速さ[ラジアン/frame]
-	const float kUpRotSpeed = 0.05f;
-
-	//押した方向で移動ベクトルを変更
-	if (input_->PushKey(DIK_SPACE))
-	{
-		viewAngle += kUpRotSpeed;
-		viewAngle = fmodf(viewAngle, PI * 2.0f);
-	}
-
-	//上方向ベクトルを計算(半径1の円周上の座標)
-	viewProjection_.up = { cosf(viewAngle),sinf(viewAngle),0.0f };
 
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
@@ -272,6 +335,10 @@ void GameScene::Update() {
 	debugText_->Printf("target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y, viewProjection_.target.z);
 	debugText_->SetPos(50, 90);
 	debugText_->Printf("up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
+	debugText_->SetPos(50, 110);
+	debugText_->Printf("fovAngleY(Degree):%f", rad(viewProjection_.fovAngleY));
+	debugText_->SetPos(50, 130);
+	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
 }
 
 void GameScene::Draw() {

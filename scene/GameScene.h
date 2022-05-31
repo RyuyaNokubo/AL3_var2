@@ -10,6 +10,8 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include "DebugCamera.h"
+#include"player.h"
+#include"mine.h"
 
 /// <summary>
 /// ゲームシーン
@@ -68,14 +70,12 @@ private: // メンバ変数
 	//3Dモデル
 	Model* model_ = nullptr;
 
-	//ワールドトランスフォーム
-	WorldTransform worldTransform_[100];
-
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
 
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
+	bool isDebugCameraActive_ = false;
 
 	Vector3 vec1[102];
 	Vector3 vec2[102];
@@ -86,4 +86,6 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	//自キャラ
+	Player* player_ = nullptr;
 };

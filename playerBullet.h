@@ -4,36 +4,31 @@
 #include"Input.h"
 #include"DebugText.h"
 #include <cassert>
-#include"playerBullet.h"
 #include"mine.h"
 
 /// <summary>
-/// 自キャラ
+/// 自キャラの弾
 /// </summary>
-class Player
+class PlayerBullet
 {
 public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
 	/// <param name="model">モデル</param>
-	/// <param name="textureHandle"></param>
-	void Initialize(Model*model,uint32_t textureHandle);
-
+	/// <param name="position">初期座標</param>
+	void Initialize(Model* model,const Vector3& position);
+	
 	/// <summary>
-	/// 更新　　
+	/// 更新
 	/// </summary>
 	void Update();
 
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(ViewProjection &viewProjection);
-
-	/// <summary>
-	/// 攻撃
-	/// </summary>
-	void Attack();
+	/// <param name="viewProjection">ビュープロジェクション</param>
+	void Draw(const ViewProjection& viewProjection);
 
 private:
 	//ワールド変換データ
@@ -42,10 +37,4 @@ private:
 	Model* model_ = nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
-	//入力処理するため
-	Input* input_ = nullptr;
-	//デバッグテキスト
-	DebugText* debugText_ = nullptr;
-	//弾
-	PlayerBullet* bullet_ = nullptr;
 };

@@ -88,6 +88,18 @@ Matrix4 setTrans(const WorldTransform a)
 	return b;
 }
 
+void setWorldTransform(WorldTransform a)
+{
+	Matrix4 matScale = setScale(a);
+	Matrix4 matRot = setRot(a);
+	Matrix4 matTrans = setTrans(a);
+
+	a.matWorld_ = MathUtility::Matrix4Identity();
+	matScale *= matRot;
+	matScale *= matTrans;
+	a.matWorld_ *= matScale;
+}
+
 float rad(float a)
 {
 	return 3.141592 * a / 180;

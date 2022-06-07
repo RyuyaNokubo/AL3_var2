@@ -18,6 +18,8 @@ Matrix4 setRotZ(const WorldTransform a);
 
 Matrix4 setTrans(const WorldTransform a);
 
+void setWorldTransform(const WorldTransform a);
+
 float rad(float a);
 
 float MinNum(float a, float aMin);

@@ -5,6 +5,8 @@
 #include"DebugText.h"
 #include <cassert>
 #include"playerBullet.h"
+#include<memory>
+#include<list>
 #include"mine.h"
 
 /// <summary>
@@ -18,7 +20,7 @@ public:
 	/// </summary>
 	/// <param name="model">モデル</param>
 	/// <param name="textureHandle"></param>
-	void Initialize(Model*model,uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle);
 
 	/// <summary>
 	/// 更新　　
@@ -28,7 +30,7 @@ public:
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw(ViewProjection &viewProjection);
+	void Draw(ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 攻撃
@@ -47,5 +49,5 @@ private:
 	//デバッグテキスト
 	DebugText* debugText_ = nullptr;
 	//弾
-	PlayerBullet* bullet_ = nullptr;
+	std::list<std::unique_ptr<PlayerBullet>>bullets_;
 };

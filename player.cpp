@@ -55,7 +55,7 @@ void Player::Update()
 	const float kRotLimit = rad(30.0f);
 
 	//”ÍˆÍ‚ğ’´‚¦‚È‚¢ˆ—
-	worldTransform_.translation_.x = MaxNum(worldTransform_.translation_.x,kMoveLimitX);
+	worldTransform_.translation_.x = MaxNum(worldTransform_.translation_.x, kMoveLimitX);
 	worldTransform_.translation_.x = MinNum(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.y = MaxNum(worldTransform_.translation_.y, kMoveLimitY);
 	worldTransform_.translation_.y = MinNum(worldTransform_.translation_.y, -kMoveLimitY);
@@ -76,9 +76,9 @@ void Player::Update()
 	Attack();
 
 	//’eXV
-	if (bullet_)
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_)
 	{
-		bullet_->Update();
+		bullet->Update();
 	}
 
 	//ƒLƒƒƒ‰ƒNƒ^[‚ÌÀ•W‚ğ‰æ–Ê•\¦‚·‚éˆ—
@@ -92,20 +92,20 @@ void Player::Draw(ViewProjection& viewProjection)
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 
 	//’e•`‰æ
-	if (bullet_)
+	for (std::unique_ptr<PlayerBullet>& bullet : bullets_)
 	{
-		bullet_->Draw(viewProjection);
+		bullet->Draw(viewProjection);
 	}
 }
 
 void Player::Attack()
 {
-	if (input_->PushKey(DIK_SPACE))
+	if (input_->TriggerKey(DIK_SPACE))
 	{
 		//’e‚ğ¶¬‚µA‰Šú‰»
-		PlayerBullet* newBullet = new PlayerBullet();
+		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
 		newBullet->Initialize(model_, worldTransform_.translation_);
 		//’e‚ğ“o˜^‚·‚é
-		bullet_ = newBullet;
+		bullets_.push_back(std::move(newBullet));
 	}
 }

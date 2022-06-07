@@ -20,6 +20,9 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 void Player::Update()
 {
+	//デスフラグの立った弾を削除
+	bullets_.remove_if([](std::unique_ptr<PlayerBullet>& bullet) {return bullet->IsDead(); });
+
 	//キャラクターの移動ベクトル
 	Vector3 move = { 0,0,0 };
 	Vector3 rotMove = { 0,0,0 };
@@ -31,20 +34,18 @@ void Player::Update()
 	float rot = rad(1.0f);
 
 	//キー入力
-	if (input_->PushKey(DIK_W))
+	if (input_->PushKey(DIK_W) || input_->PushKey(DIK_UP))
 		move.y += speed;
-	if (input_->PushKey(DIK_S))
+	if (input_->PushKey(DIK_S) || input_->PushKey(DIK_DOWN))
 		move.y -= speed;
-	if (input_->PushKey(DIK_A))
-	{
+	if (input_->PushKey(DIK_A) || input_->PushKey(DIK_LEFT))
 		move.x -= speed;
-		rotMove.y -= rot;
-	}
-	if (input_->PushKey(DIK_D))
-	{
+	if (input_->PushKey(DIK_D) || input_->PushKey(DIK_RIGHT))
 		move.x += speed;
+	if (input_->PushKey(DIK_Z))
 		rotMove.y += rot;
-	}
+	if (input_->PushKey(DIK_X))
+		rotMove.y -= rot;
 
 	worldTransform_.translation_ += move;
 	worldTransform_.rotation_ += rotMove;
@@ -52,15 +53,12 @@ void Player::Update()
 	//移動限界座標&角度
 	const float kMoveLimitX = 35;
 	const float kMoveLimitY = 20;
-	const float kRotLimit = rad(30.0f);
 
 	//範囲を超えない処理
 	worldTransform_.translation_.x = MaxNum(worldTransform_.translation_.x, kMoveLimitX);
 	worldTransform_.translation_.x = MinNum(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.y = MaxNum(worldTransform_.translation_.y, kMoveLimitY);
 	worldTransform_.translation_.y = MinNum(worldTransform_.translation_.y, -kMoveLimitY);
-	worldTransform_.rotation_.y = MaxNum(worldTransform_.rotation_.y, kRotLimit);
-	worldTransform_.rotation_.y = MinNum(worldTransform_.rotation_.y, -kRotLimit);
 
 	//ベクトルの加算
 	Matrix4 matTrans = setTrans(worldTransform_);
@@ -102,9 +100,16 @@ void Player::Attack()
 {
 	if (input_->TriggerKey(DIK_SPACE))
 	{
+		//弾の速度
+		const float kBulletSpeed = 1.0f;
+		Vector3 velocity(0, 0, kBulletSpeed);
+
+		//速度ベクトルを自機の向きに合わせて回転させる
+		velocity = vec_mat(velocity, worldTransform_);
+
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_);
+		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));
 	}

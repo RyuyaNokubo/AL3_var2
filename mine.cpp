@@ -122,3 +122,19 @@ float MaxNum(float a, float aMax)
 	}
 	return a;
 }
+
+Vector3 vec_mat(Vector3 a, WorldTransform b)
+{
+	Vector3 c;
+	c.x = a.x * b.matWorld_.m[0][0] +
+		a.y * b.matWorld_.m[1][0] +
+		a.z * b.matWorld_.m[2][0];
+	c.y = a.x * b.matWorld_.m[0][1] +
+		a.y * b.matWorld_.m[1][1] +
+		a.z * b.matWorld_.m[2][1];
+	c.z = a.x * b.matWorld_.m[0][2] +
+		a.y * b.matWorld_.m[1][2] +
+		a.z * b.matWorld_.m[2][2];
+
+	return c;
+}

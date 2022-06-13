@@ -11,6 +11,7 @@
 #include "WorldTransform.h"
 #include "DebugCamera.h"
 #include"player.h"
+#include"Enemy.h"
 #include"mine.h"
 
 /// <summary>
@@ -87,5 +88,8 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	//自キャラ
-	Player* player_ = nullptr;
+	std::unique_ptr<Player>player_;
+
+	//エネミー
+	std::unique_ptr<Enemy>enemy_;
 };

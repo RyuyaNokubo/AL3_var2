@@ -10,7 +10,6 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
-	delete player_;
 }
 
 void GameScene::Initialize() {
@@ -27,9 +26,22 @@ void GameScene::Initialize() {
 	model_ = Model::Create();
 
 	//自キャラの生成
-	player_ = new Player();
+	Player* newPlayer = new Player();
 	//自キャラの初期化
-	player_->Initialize(model_,textureHandle_);
+	newPlayer->Initialize(model_, textureHandle_);
+	//自キャラの登録
+	player_.reset(newPlayer);
+
+	//エネミーの数値設定
+	Vector3 enemyPosition = { 0.0f,4.0f,50.0f };
+	Vector3 enemyVelocity = { 0.0f,0.0f,-0.2f };
+	//エネミーの生成
+	Enemy* newEnemy = new Enemy();
+	//エネミーの初期化
+	newEnemy->Initialize(model_, enemyPosition, enemyVelocity);
+	//エネミーの登録
+	enemy_.reset(newEnemy);
+
 
 	//乱数シード生成器
 	std::random_device seed_gen;
@@ -102,8 +114,8 @@ void GameScene::Update() {
 
 	if (isDebugCameraActive_ == true)
 	{
-	//デバッグカメラの更新
-	debugCamera_->Update();
+		//デバッグカメラの更新
+		debugCamera_->Update();
 	}
 
 	////視点の移動ベクトル
@@ -184,7 +196,7 @@ void GameScene::Update() {
 	//行列の再計算
 	viewProjection_.UpdateMatrix();
 
-	//デバッグ用表示
+	//カメラデバッグ用表示
 	debugText_->SetPos(50, 50);
 	debugText_->Printf("eye:(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
 	debugText_->SetPos(50, 70);
@@ -196,8 +208,9 @@ void GameScene::Update() {
 	debugText_->SetPos(50, 130);
 	debugText_->Printf("nearZ:%f", viewProjection_.nearZ);
 
-	//自キャラの更新
+	//キャラの更新
 	player_->Update();
+	enemy_->Update();
 }
 
 void GameScene::Draw() {
@@ -229,7 +242,8 @@ void GameScene::Draw() {
 	//3Dモデル描画
 	//自キャラの描画
 	player_->Draw(viewProjection_);
-	
+	enemy_->Draw(viewProjection_);
+
 	////ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
 	//for (int i = 0; i < 102; i++)
 	//{

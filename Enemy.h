@@ -20,7 +20,7 @@ public:
 	/// <param name="model">モデル</param>
 	/// <param name="position">初期座標</param>
 	/// <param name="velocity">速度</param>
-	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
+	void Initialize(Model* model, const Vector3& position, const Vector3& aVelocity, const Vector3& lVelocity);
 
 	/// <summary>
 	/// 更新
@@ -33,6 +33,9 @@ public:
 	/// <param name="viewProjection">ビュープロジェクション</param>
 	void Draw(const ViewProjection& viewProjection);
 
+	void approach();
+	void leave();
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -41,5 +44,13 @@ private:
 	//テクスチャハンドル
 	uint32_t enemyTextureHandle_ = 0u;
 	//速度
-	Vector3 velocity_;
+	Vector3 approachVelocity_, leaveVelocity_;
+	//行動フェーズ
+	enum class Phase
+	{
+		Approach,	//接近する
+		Leave,		//離脱する
+	};
+	//フェーズ
+	Phase phase_ = Phase::Approach;
 };

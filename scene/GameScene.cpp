@@ -34,11 +34,12 @@ void GameScene::Initialize() {
 
 	//エネミーの数値設定
 	Vector3 enemyPosition = { 0.0f,4.0f,50.0f };
-	Vector3 enemyVelocity = { 0.0f,0.0f,-0.2f };
+	Vector3 enemyApproachVelocity = { 0.0f,0.0f,-0.2f };
+	Vector3 enemyLeaveVelocity = { -0.1f,0.1f,0.0f };
 	//エネミーの生成
 	Enemy* newEnemy = new Enemy();
 	//エネミーの初期化
-	newEnemy->Initialize(model_, enemyPosition, enemyVelocity);
+	newEnemy->Initialize(model_, enemyPosition, enemyApproachVelocity, enemyLeaveVelocity);
 	//エネミーの登録
 	enemy_.reset(newEnemy);
 

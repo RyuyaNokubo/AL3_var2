@@ -1,6 +1,6 @@
 #include"Enemy.h"
 
-void Enemy::Initialize(Model* model, const Vector3& position, const Vector3& velocity)
+void Enemy::Initialize(Model* model, const Vector3& position, const Vector3& aVelocity, const Vector3& lVelocity)
 {
 	//NULLポインタチェック
 	assert(model);
@@ -14,13 +14,24 @@ void Enemy::Initialize(Model* model, const Vector3& position, const Vector3& vel
 	//引数で受け取った初期座標をセット
 	worldTransform_.translation_ = position;
 	//引数で受け取った速度をメンバ変数に代入
-	velocity_ = velocity;
+	approachVelocity_ = aVelocity;
+	leaveVelocity_ = lVelocity;
 }
 
 void Enemy::Update()
 {
 	//座標を移動させる(1フレーム分の移動量を足しこむ)
-	worldTransform_.translation_ += velocity_;
+	switch (phase_)
+	{
+	case Phase::Approach:
+	default:
+		approach();
+		break;
+
+	case Phase::Leave:
+		leave();
+		break;
+	}
 
 	//ワールドトランスフォームの更新
 	Matrix4 matScale = setScale(worldTransform_);
@@ -38,4 +49,21 @@ void Enemy::Update()
 void Enemy::Draw(const ViewProjection& viewProjection)
 {
 	model_->Draw(worldTransform_, viewProjection, enemyTextureHandle_);
+}
+
+void Enemy::approach()
+{
+	//移動(ベクトルの加算)
+	worldTransform_.translation_ += approachVelocity_;
+	//既定の位置に到達したら離脱
+	if (worldTransform_.translation_.z < 0.0f)
+	{
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::leave()
+{
+	//移動(ベクトルを加算)
+	worldTransform_.translation_ += leaveVelocity_;
 }

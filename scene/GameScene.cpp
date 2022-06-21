@@ -33,7 +33,7 @@ void GameScene::Initialize() {
 	player_.reset(newPlayer);
 
 	//エネミーの数値設定
-	Vector3 enemyPosition = { 0.0f,4.0f,50.0f };
+	Vector3 enemyPosition = { 10.0f,4.0f,50.0f };
 	Vector3 enemyApproachVelocity = { 0.0f,0.0f,-0.2f };
 	Vector3 enemyLeaveVelocity = { -0.1f,0.1f,0.0f };
 	//エネミーの生成

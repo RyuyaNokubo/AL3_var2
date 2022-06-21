@@ -27,3 +27,5 @@ float MinNum(float a, float aMin);
 float MaxNum(float a, float aMax);
 
 Vector3 vec_mat(Vector3 a, WorldTransform b);
+
+Vector3 vec_one(Vector3 a);

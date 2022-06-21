@@ -9,6 +9,9 @@
 #include<list>
 #include"mine.h"
 
+//自機クラスの前方宣言
+class Player;
+
 /// <summary>
 /// 敵
 /// </summary>
@@ -49,6 +52,11 @@ public:
 	//発射間隔
 	static const int kFireInterval = 60;
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	//ワールド座標を取得
+	Vector3 GetWorldPosition();
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -70,4 +78,7 @@ private:
 	std::list<std::unique_ptr<EnemyBullet>>bullets_;
 	//発射タイマー
 	int32_t fireTimer = 0;
+	//自キャラ
+	Player* player_ = nullptr;
+
 };

@@ -34,7 +34,7 @@ void GameScene::Initialize() {
 
 	//エネミーの数値設定
 	Vector3 enemyPosition = { 10.0f,4.0f,50.0f };
-	Vector3 enemyApproachVelocity = { 0.0f,0.0f,-0.2f };
+	Vector3 enemyApproachVelocity = { 0.0f,0.0f,-0.1f };
 	Vector3 enemyLeaveVelocity = { -0.1f,0.1f,0.0f };
 	//エネミーの生成
 	Enemy* newEnemy = new Enemy();
@@ -42,6 +42,9 @@ void GameScene::Initialize() {
 	newEnemy->Initialize(model_, enemyPosition, enemyApproachVelocity, enemyLeaveVelocity);
 	//エネミーの登録
 	enemy_.reset(newEnemy);
+
+	//敵キャラに自キャラのアドレスを渡す
+	enemy_->SetPlayer(player_.get());
 
 
 	//乱数シード生成器

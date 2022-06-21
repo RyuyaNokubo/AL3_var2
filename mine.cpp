@@ -138,3 +138,10 @@ Vector3 vec_mat(Vector3 a, WorldTransform b)
 
 	return c;
 }
+
+Vector3 vec_one(Vector3 a)
+{
+	double b = sqrt(pow(a.x,2) + pow(a.y,2) + pow(a.z,2));
+
+	return a /= b;
+}

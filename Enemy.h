@@ -57,6 +57,12 @@ public:
 	//ワールド座標を取得
 	Vector3 GetWorldPosition();
 
+	//衝突を検出したら呼び出されるコールバック関数
+	void OnCollision();
+
+	//弾リストを所得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetBullets() { return bullets_; }
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_;
@@ -74,8 +80,10 @@ private:
 	};
 	//フェーズ
 	Phase phase_ = Phase::Approach;
+
 	//弾
 	std::list<std::unique_ptr<EnemyBullet>>bullets_;
+	
 	//発射タイマー
 	int32_t fireTimer = 0;
 	//自キャラ

@@ -12,6 +12,7 @@
 #include "DebugCamera.h"
 #include"player.h"
 #include"Enemy.h"
+#include"Skydome.h"
 #include"mine.h"
 
 /// <summary>
@@ -75,6 +76,7 @@ private: // メンバ変数
 
 	//3Dモデル
 	Model* model_ = nullptr;
+	Model* skydomeModel_ = nullptr;
 
 	//ビュープロジェクション
 	ViewProjection viewProjection_;
@@ -97,4 +99,7 @@ private: // メンバ変数
 
 	//エネミー
 	std::unique_ptr<Enemy>enemy_;
+
+	//天球
+	std::unique_ptr<Skydome>skydome_;
 };

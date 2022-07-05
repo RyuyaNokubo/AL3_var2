@@ -9,6 +9,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
+	delete skydomeModel_;
 	delete debugCamera_;
 }
 
@@ -24,6 +25,7 @@ void GameScene::Initialize() {
 
 	//3Dモデルの生成
 	model_ = Model::Create();
+	skydomeModel_ = Model::CreateFromOBJ("sky", true);
 
 	//自キャラの生成
 	Player* newPlayer = new Player();
@@ -45,6 +47,14 @@ void GameScene::Initialize() {
 
 	//敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_.get());
+
+
+	//天球の生成
+	Skydome* newSkydome = new Skydome();
+	//天球の初期化
+	newSkydome->Initialize(skydomeModel_);
+	//天球の登録
+	skydome_.reset(newSkydome);
 
 
 	//乱数シード生成器
@@ -218,6 +228,7 @@ void GameScene::Update() {
 	//キャラの更新
 	player_->Update();
 	enemy_->Update();
+	skydome_->Update();
 
 }
 
@@ -248,9 +259,12 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	//3Dモデル描画
-	//自キャラの描画
+	//自キャラ
 	player_->Draw(viewProjection_);
+	//エネミー
 	enemy_->Draw(viewProjection_);
+	//天球
+	skydome_->Draw(viewProjection_);
 
 	////ライン描画が参照するビュープロジェクションを指定する(アドレス渡し)
 	//for (int i = 0; i < 102; i++)

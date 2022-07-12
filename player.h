@@ -9,6 +9,9 @@
 #include<list>
 #include"mine.h"
 
+//空のクラス宣言
+class RailCamera;
+
 /// <summary>
 /// 自キャラ
 /// </summary>
@@ -43,8 +46,11 @@ public:
 	//衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
 
-	//弾リストを所得
+	//弾リストを取得
 	const std::list<std::unique_ptr<PlayerBullet>>& GetBullets() { return bullets_; }
+
+	//レールカメラ取得
+	void SetCamera(RailCamera* camera) { railCamera_ = camera; }
 
 private:
 	//ワールド変換データ
@@ -60,4 +66,7 @@ private:
 	
 	//弾
 	std::list<std::unique_ptr<PlayerBullet>>bullets_;
+
+	//レールカメラ
+	RailCamera* railCamera_=nullptr;
 };

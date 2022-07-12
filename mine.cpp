@@ -145,3 +145,4 @@ Vector3 vec_one(Vector3 a)
 
 	return a /= b;
 }
+

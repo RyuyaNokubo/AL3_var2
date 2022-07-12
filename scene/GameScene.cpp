@@ -26,9 +26,23 @@ void GameScene::Initialize() {
 	//3Dモデルの生成
 	model_ = Model::Create();
 	skydomeModel_ = Model::CreateFromOBJ("sky", true);
+	
+	//レールカメラの数値設定
+	WorldTransform railCameraPos;
+	railCameraPos.Initialize();
+	Vector3 railCameraRot = { 0,0,0 };
+	//レールカメラの生成
+	RailCamera* newRailCamera = new RailCamera();
+	//レールカメラの初期化
+	newRailCamera->Initialize(railCameraPos, railCameraRot);
+	//レールカメラの登録
+	railCamera_.reset(newRailCamera);
+
 
 	//自キャラの生成
 	Player* newPlayer = new Player();
+	//自キャラにレールカメラのアドレスを渡す
+	newPlayer->SetCamera(railCamera_.get());
 	//自キャラの初期化
 	newPlayer->Initialize(model_, textureHandle_);
 	//自キャラの登録
@@ -135,83 +149,8 @@ void GameScene::Update() {
 	//当たり判定処理
 	CheckAllCollisions();
 
-	////視点の移動ベクトル
-	//Vector3 moveZ = { 0,0,0 };
-	////注視点の移動ベクトル
-	//Vector3 moveX = { 0,0,0 };
-
-	////視点、注視点の移動速さ
-	//const float speed = 0.2f;
-
-	////押した方向で移動ベクトルを変更
-	//if (input_->PushKey(DIK_W))
-	//{
-	//	moveZ.z += speed;
-	//}
-	//else if (input_->PushKey(DIK_S))
-	//{
-	//	moveZ.z -= speed;
-	//}
-	//else if (input_->PushKey(DIK_LEFT))
-	//{
-	//	moveX.x -= speed;
-	//}
-	//else if (input_->PushKey(DIK_RIGHT))
-	//{
-	//	moveX.x += speed;
-	//}
-
-	////視点移動(ベクトルの加算)
-	//viewProjection_.eye += moveZ;
-
-	////注視点移動(ベクトルの加算)
-	//viewProjection_.target += moveX;
-
-	////上方向回転処理
-	////上方向の回転速さ[ラジアン/frame]
-	//const float kUpRotSpeed = 0.05f;
-
-	////押した方向で移動ベクトルを変更
-	//if (input_->PushKey(DIK_SPACE))
-	//{
-	//	viewAngle += kUpRotSpeed;
-	//	viewAngle = fmodf(viewAngle, PI * 2.0f);
-	//}
-
-	////上方向ベクトルを計算(半径1の円周上の座標)
-	//viewProjection_.up = { cosf(viewAngle),sinf(viewAngle),0.0f };
-
-	////Fov変更処理
-	//{
-	//	//上キーで視野角が広がる
-	//	if (input_->PushKey(DIK_UP))
-	//	{
-	//		viewProjection_.fovAngleY += 0.01f;
-	//		viewProjection_.fovAngleY = MaxNum(viewProjection_.fovAngleY, PI);
-	//	}
-	//	//下キーで視野角が狭まる
-	//	else if (input_->PushKey(DIK_DOWN))
-	//	{
-	//		viewProjection_.fovAngleY -= 0.01f;
-	//		viewProjection_.fovAngleY = MinNum(viewProjection_.fovAngleY, 0.01f);
-	//	}
-	//}
-
-	////クリップ距離変更処理
-	//{
-	//	//A,Dキーでニアクリップ距離を増減
-	//	if (input_->PushKey(DIK_A))
-	//	{
-	//		viewProjection_.nearZ+=0.1f;
-	//	}
-	//	else if (input_->PushKey(DIK_D))
-	//	{
-	//		viewProjection_.nearZ-=0.1f;
-	//	}
-	//}
-
 	//行列の再計算
-	viewProjection_.UpdateMatrix();
+	viewProjection_=railCamera_->getViewProjection();
 
 	//カメラデバッグ用表示
 	debugText_->SetPos(50, 50);
@@ -229,7 +168,7 @@ void GameScene::Update() {
 	player_->Update();
 	enemy_->Update();
 	skydome_->Update();
-
+	railCamera_->Update();
 }
 
 void GameScene::Draw() {

@@ -13,6 +13,7 @@
 #include"player.h"
 #include"Enemy.h"
 #include"Skydome.h"
+#include"RailCamera.h"
 #include"mine.h"
 
 /// <summary>
@@ -102,4 +103,7 @@ private: // メンバ変数
 
 	//天球
 	std::unique_ptr<Skydome>skydome_;
+
+	//レールカメラ
+	std::unique_ptr<RailCamera>railCamera_;
 };

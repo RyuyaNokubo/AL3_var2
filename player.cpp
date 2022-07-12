@@ -1,10 +1,12 @@
 #include"player.h"
+#include"RailCamera.h"
 
 
 void Player::Initialize(Model* model, uint32_t textureHandle)
 {
 	//NULLポインタチェック
 	assert(model);
+	assert(railCamera_);
 
 	//引数として受け取ったデータをメンバ変数に記録する
 	model_ = model;
@@ -16,6 +18,9 @@ void Player::Initialize(Model* model, uint32_t textureHandle)
 
 	//ワールド変換の初期化
 	worldTransform_.Initialize();
+	WorldTransform camera= railCamera_->getWorldTransform();
+	worldTransform_.translation_ = { 0.0f,0.0f,30.0f };
+	worldTransform_.parent_ = &camera;
 }
 
 void Player::Update()
@@ -51,8 +56,8 @@ void Player::Update()
 	worldTransform_.rotation_ += rotMove;
 
 	//移動限界座標&角度
-	const float kMoveLimitX = 35;
-	const float kMoveLimitY = 20;
+	const float kMoveLimitX = 20;
+	const float kMoveLimitY = 10;
 
 	//範囲を超えない処理
 	worldTransform_.translation_.x = MaxNum(worldTransform_.translation_.x, kMoveLimitX);
@@ -66,6 +71,8 @@ void Player::Update()
 	worldTransform_.matWorld_ = MathUtility::Matrix4Identity();
 	worldTransform_.matWorld_ *= matRot;
 	worldTransform_.matWorld_ *= matTrans;
+	WorldTransform camera = railCamera_->getWorldTransform();
+	worldTransform_.matWorld_ *= camera.matWorld_;
 
 	//行列更新
 	worldTransform_.TransferMatrix();
@@ -109,7 +116,7 @@ void Player::Attack()
 
 		//弾を生成し、初期化
 		std::unique_ptr<PlayerBullet> newBullet = std::make_unique<PlayerBullet>();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 		//弾を登録する
 		bullets_.push_back(std::move(newBullet));
 	}
@@ -119,10 +126,14 @@ Vector3 Player::GetWorldPosition()
 {
 	//ワールド座標を入れる変数
 	Vector3 worldPos;
+
+	//親のワールドトランスフォーム
+	WorldTransform parent = railCamera_->getWorldTransform();
+
 	//ワールド行列の平行移動成分を取得(ワールド座標)
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y= worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos.x = worldTransform_.translation_.x+parent.translation_.x;
+	worldPos.y= worldTransform_.translation_.y + parent.translation_.y;
+	worldPos.z = worldTransform_.translation_.z + parent.translation_.z;
 
 	return worldPos;
 }

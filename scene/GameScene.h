@@ -12,9 +12,11 @@
 #include "DebugCamera.h"
 #include"player.h"
 #include"Enemy.h"
+#include"EnemyBullet.h"
 #include"Skydome.h"
 #include"RailCamera.h"
 #include"mine.h"
+#include<sstream>
 
 /// <summary>
 /// ゲームシーン
@@ -66,6 +68,27 @@ public: // メンバ関数
 	/// </summary>
 	void CheckAllCollisions();
 
+	void enemyPop(Vector3 position);
+
+	//敵弾リストを所得
+	const std::list<std::unique_ptr<EnemyBullet>>& GetEnemyBullets() { return enemyBullets_; }
+	
+	/// <summary>
+	/// 敵弾を追加する
+	/// </summary>
+	/// <param name="enemyBullet">敵弾</param>
+	void AddEnemyBullet(std::unique_ptr<EnemyBullet>enemyBullet);
+
+	/// <summary>
+	/// 敵発生データの読み込み
+	/// </summary>
+	void LoadEnemyPopData();
+
+	/// <summary>
+	/// 敵発生コマンドの更新
+	/// </summary>
+	void UpdateEnemyPopCommands();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -99,7 +122,19 @@ private: // メンバ変数
 	std::unique_ptr<Player>player_;
 
 	//エネミー
-	std::unique_ptr<Enemy>enemy_;
+	std::list<std::unique_ptr<Enemy>>enemy_;
+
+	//敵発生コマンド
+	std::stringstream enemyPopCommands;
+
+	//敵待機フラグ
+	bool isEnemyPopWait = false;
+
+	//敵待機タイマー
+	int enemyWaitTimer = 0;
+
+	//エネミー弾
+	std::list<std::unique_ptr<EnemyBullet>>enemyBullets_;
 
 	//天球
 	std::unique_ptr<Skydome>skydome_;

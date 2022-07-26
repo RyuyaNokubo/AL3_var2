@@ -2,6 +2,7 @@
 #include"Model.h"
 #include"WorldTransform.h"
 #include<cassert>
+#include"mine.h"
 
 class Skydome
 {
